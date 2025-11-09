@@ -1,0 +1,17 @@
+package dev.khanhtimn.gravitychanger.mixin;
+
+import dev.khanhtimn.gravitychanger.api.GravityChangerAPI;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
+
+@Mixin(AbstractHorse.class)
+public class AbstractHorseMixin {
+    @ModifyVariable(method = "causeFallDamage", at = @At("HEAD"), ordinal = 1, argsOnly = true)
+    private float diminishFallDamage(float value) {
+        return value * (float) Math.sqrt(GravityChangerAPI.getGravityStrength(((Entity) (Object) this)));
+    }
+
+}
