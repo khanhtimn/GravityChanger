@@ -1,8 +1,11 @@
 package dev.khanhtimn.gravitychanger.mixin;
 
 
+import com.llamalad7.mixinextras.expression.Definition;
+import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import dev.khanhtimn.gravitychanger.api.GravityChangerAPI;
 import dev.khanhtimn.gravitychanger.util.RotationUtil;
 import net.minecraft.core.BlockPos;
@@ -34,8 +37,11 @@ public abstract class LivingEntityMixin extends Entity {
     @Shadow
     public abstract float getViewYRot(float tickDelta);
 
+    @Shadow
+    protected abstract void updateWalkAnimation(float partialTick);
+
     @Redirect(
-            method = "Lnet/minecraft/world/entity/LivingEntity;travel(Lnet/minecraft/world/phys/Vec3;)V",
+            method = "travel(Lnet/minecraft/world/phys/Vec3;)V",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/entity/LivingEntity;getY()D",
@@ -52,7 +58,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Redirect(
-            method = "Lnet/minecraft/world/entity/LivingEntity;travel(Lnet/minecraft/world/phys/Vec3;)V",
+            method = "travel(Lnet/minecraft/world/phys/Vec3;)V",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/entity/LivingEntity;getY()D",
@@ -69,7 +75,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Redirect(
-            method = "Lnet/minecraft/world/entity/LivingEntity;travel(Lnet/minecraft/world/phys/Vec3;)V",
+            method = "travel(Lnet/minecraft/world/phys/Vec3;)V",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/entity/LivingEntity;getY()D",
@@ -86,7 +92,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Redirect(
-            method = "Lnet/minecraft/world/entity/LivingEntity;travel(Lnet/minecraft/world/phys/Vec3;)V",
+            method = "travel(Lnet/minecraft/world/phys/Vec3;)V",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/entity/LivingEntity;getY()D",
@@ -103,7 +109,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @ModifyVariable(
-            method = "Lnet/minecraft/world/entity/LivingEntity;travel(Lnet/minecraft/world/phys/Vec3;)V",
+            method = "travel(Lnet/minecraft/world/phys/Vec3;)V",
             at = @At(
                     value = "INVOKE_ASSIGN",
                     target = "Lnet/minecraft/world/entity/LivingEntity;getLookAngle()Lnet/minecraft/world/phys/Vec3;",
@@ -138,7 +144,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Redirect(
-            method = "Lnet/minecraft/world/entity/LivingEntity;hasLineOfSight(Lnet/minecraft/world/entity/Entity;)Z",
+            method = "hasLineOfSight(Lnet/minecraft/world/entity/Entity;)Z",
             at = @At(
                     value = "NEW",
                     target = "(DDD)Lnet/minecraft/world/phys/Vec3;",
@@ -155,7 +161,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Redirect(
-            method = "Lnet/minecraft/world/entity/LivingEntity;hasLineOfSight(Lnet/minecraft/world/entity/Entity;)Z",
+            method = "hasLineOfSight(Lnet/minecraft/world/entity/Entity;)Z",
             at = @At(
                     value = "NEW",
                     target = "(DDD)Lnet/minecraft/world/phys/Vec3;",
@@ -172,7 +178,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Inject(
-            method = "Lnet/minecraft/world/entity/LivingEntity;getLocalBoundsForPose(Lnet/minecraft/world/entity/Pose;)Lnet/minecraft/world/phys/AABB;",
+            method = "getLocalBoundsForPose(Lnet/minecraft/world/entity/Pose;)Lnet/minecraft/world/phys/AABB;",
             at = @At("RETURN"),
             cancellable = true
     )
@@ -247,19 +253,19 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Redirect(
-            method = "Lnet/minecraft/world/entity/LivingEntity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z",
+            method = "hurt",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/entity/Entity;getX()D",
-                    ordinal = 0
+                    target = "Lnet/minecraft/world/phys/Vec3;x()D"
             )
     )
-    private double redirect_damage_getX_0(Entity attacker) {
+    private double redirect_damage_getX_0(Vec3 damageSourcePosition, @Local(ordinal = 0) Entity attacker) {
         Direction gravityDirection = GravityChangerAPI.getGravityDirection((Entity) (Object) this);
         if (gravityDirection == Direction.DOWN) {
             if (GravityChangerAPI.getGravityDirection(attacker) == Direction.DOWN) {
-                return attacker.getX();
-            } else {
+                return damageSourcePosition.x();
+            }
+            else {
                 return attacker.getEyePosition().x;
             }
         }
@@ -268,19 +274,20 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Redirect(
-            method = "Lnet/minecraft/world/entity/LivingEntity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z",
+            method = "hurt",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/entity/Entity;getZ()D",
+                    target = "Lnet/minecraft/world/phys/Vec3;z()D",
                     ordinal = 0
             )
     )
-    private double redirect_damage_getZ_0(Entity attacker) {
+    private double redirect_damage_getZ_0(Vec3 damageSourcePosition, @Local(ordinal = 0) Entity attacker) {
         Direction gravityDirection = GravityChangerAPI.getGravityDirection((Entity) (Object) this);
         if (gravityDirection == Direction.DOWN) {
             if (GravityChangerAPI.getGravityDirection(attacker) == Direction.DOWN) {
-                return attacker.getZ();
-            } else {
+                return damageSourcePosition.z();
+            }
+            else {
                 return attacker.getEyePosition().z;
             }
         }
@@ -289,7 +296,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Redirect(
-            method = "Lnet/minecraft/world/entity/LivingEntity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z",
+            method = "hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/entity/LivingEntity;getX()D",
@@ -306,7 +313,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Redirect(
-            method = "Lnet/minecraft/world/entity/LivingEntity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z",
+            method = "hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/entity/LivingEntity;getZ()D",
@@ -323,7 +330,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Redirect(
-            method = "Lnet/minecraft/world/entity/LivingEntity;blockedByShield(Lnet/minecraft/world/entity/LivingEntity;)V",
+            method = "blockedByShield(Lnet/minecraft/world/entity/LivingEntity;)V",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/entity/LivingEntity;getX()D",
@@ -341,7 +348,7 @@ public abstract class LivingEntityMixin extends Entity {
 
 
     @Redirect(
-            method = "Lnet/minecraft/world/entity/LivingEntity;blockedByShield(Lnet/minecraft/world/entity/LivingEntity;)V",
+            method = "blockedByShield(Lnet/minecraft/world/entity/LivingEntity;)V",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/entity/LivingEntity;getZ()D",
@@ -358,7 +365,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Redirect(
-            method = "Lnet/minecraft/world/entity/LivingEntity;blockedByShield(Lnet/minecraft/world/entity/LivingEntity;)V",
+            method = "blockedByShield(Lnet/minecraft/world/entity/LivingEntity;)V",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/entity/LivingEntity;getX()D",
@@ -379,7 +386,7 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @Redirect(
-            method = "Lnet/minecraft/world/entity/LivingEntity;blockedByShield(Lnet/minecraft/world/entity/LivingEntity;)V",
+            method = "blockedByShield(Lnet/minecraft/world/entity/LivingEntity;)V",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/entity/LivingEntity;getZ()D",
@@ -417,13 +424,11 @@ public abstract class LivingEntityMixin extends Entity {
         return original.call(this.getEyePosition(), rotated.x, rotated.y, rotated.z);
     }
 
+    @Definition(id = "yRot", method = "Lnet/minecraft/world/phys/Vec3;yRot(F)Lnet/minecraft/world/phys/Vec3;")
+    @Expression("? = ?.yRot(?)")
     @ModifyVariable(
-            method = "Lnet/minecraft/world/entity/LivingEntity;spawnItemParticles(Lnet/minecraft/world/item/ItemStack;I)V",
-            at = @At(
-                    value = "INVOKE_ASSIGN",
-                    target = "Lnet/minecraft/world/phys/Vec3;yRot(F)Lnet/minecraft/world/phys/Vec3;",
-                    ordinal = 0
-            ),
+            method = "spawnItemParticles(Lnet/minecraft/world/item/ItemStack;I)V",
+            at = @At(value = "MIXINEXTRAS:EXPRESSION", shift = At.Shift.AFTER),
             ordinal = 0
     )
     private Vec3 modify_spawnItemParticles_Vec3d_0(Vec3 vec3d) {
@@ -472,67 +477,68 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     @ModifyVariable(
-            method = "Lnet/minecraft/world/entity/LivingEntity;isDamageSourceBlocked(Lnet/minecraft/world/damagesource/DamageSource;)Z",
-            at = @At(
-                    value = "INVOKE_ASSIGN",
-                    target = "Lnet/minecraft/world/entity/LivingEntity;getViewVector(F)Lnet/minecraft/world/phys/Vec3;",
-                    ordinal = 0
-            ),
+            method = "travel",
+            at = @At(value = "STORE"),
+            ordinal = 0
+    )
+    private double injected(double d) {
+        return d * GravityChangerAPI.getGravityStrength(this);
+    }
+
+    @ModifyVariable(method = "calculateFallDamage", at = @At("HEAD"), ordinal = 0, argsOnly = true)
+    private float diminishFallDamage(float value) {
+        return value * (float) Math.sqrt(GravityChangerAPI.getGravityStrength(this));
+    }
+
+    // TODO shield knockback
+    @Definition(id = "calculateViewVector", method = "Lnet/minecraft/world/entity/LivingEntity;calculateViewVector(FF)Lnet/minecraft/world/phys/Vec3;")
+    @Expression("? = ?.calculateViewVector(?, ?)")
+    @ModifyVariable(
+            method = "isDamageSourceBlocked",
+            at = @At(value = "MIXINEXTRAS:EXPRESSION", shift = At.Shift.AFTER),
             ordinal = 1
     )
     private Vec3 modify_blockedByShield_Vec3d_1(Vec3 vec3d) {
-        Direction gravityDirection = GravityChangerAPI.getGravityDirection((Entity) (Object) this);
-        if (gravityDirection == Direction.DOWN) {
+        Direction gravityDirection = GravityChangerAPI.getGravityDirection((Entity)(Object)this);
+        if(gravityDirection == Direction.DOWN) {
             return vec3d;
         }
 
         return RotationUtil.vecWorldToPlayer(vec3d, gravityDirection);
     }
 
-    // TODO shield knockback
-//    @ModifyArg(
-//        method = "blockedByShield",
-//        at = @At(
-//            value = "INVOKE",
-//            target = "Lnet/minecraft/world/phys/Vec3;vectorTo(Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;",
-//            ordinal = 0
-//        ),
-//        index = 0
-//    )
-//    private Vec3 modify_blockedByShield_relativize_0(Vec3 vec3d) {
-//        Direction gravityDirection = GravityChangerAPI.getGravityDirection((Entity)(Object)this);
-//        if(gravityDirection == Direction.DOWN) {
-//            return vec3d;
-//        }
-//
-//        return this.getEyePosition();
-//    }
+    @ModifyArg(
+        method = "isDamageSourceBlocked",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/phys/Vec3;vectorTo(Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;",
+            ordinal = 0
+        ),
+        index = 0
+    )
+    private Vec3 modify_blockedByShield_relativize_0(Vec3 vec3d) {
+        Direction gravityDirection = GravityChangerAPI.getGravityDirection((Entity)(Object)this);
+        if(gravityDirection == Direction.DOWN) {
+            return vec3d;
+        }
 
-//    @ModifyVariable(
-//        method = "Lnet/minecraft/world/entity/LivingEntity;isDamageSourceBlocked(Lnet/minecraft/world/damagesource/DamageSource;)Z",
-//        at = @At(
-//            value = "INVOKE_ASSIGN",
-//            target = "Lnet/minecraft/world/phys/Vec3;normalize()Lnet/minecraft/world/phys/Vec3;",
-//            ordinal = 0
-//        ),
-//        ordinal = 2
-//    )
-//    private Vec3 modify_blockedByShield_Vec3d_2(Vec3 vec3d) {
-//        Direction gravityDirection = GravityChangerAPI.getGravityDirection((Entity)(Object)this);
-//        if(gravityDirection == Direction.DOWN) {
-//            return vec3d;
-//        }
-//
-//        return RotationUtil.vecWorldToPlayer(vec3d, gravityDirection);
-//    }
-
-    @ModifyConstant(method = "Lnet/minecraft/world/entity/LivingEntity;travel(Lnet/minecraft/world/phys/Vec3;)V", constant = @Constant(doubleValue = 0.08))
-    private double multiplyGravity(double constant) {
-        return constant * GravityChangerAPI.getGravityStrength(this);
+        return this.getEyePosition();
     }
 
-    @ModifyVariable(method = "Lnet/minecraft/world/entity/LivingEntity;calculateFallDamage(FF)I", at = @At("HEAD"), ordinal = 0, argsOnly = true)
-    private float diminishFallDamage(float value) {
-        return value * (float) Math.sqrt(GravityChangerAPI.getGravityStrength(this));
+    @Definition(id = "normalize", method = "Lnet/minecraft/world/phys/Vec3;normalize()Lnet/minecraft/world/phys/Vec3;")
+    @Expression("? = ?.normalize()")
+    @ModifyVariable(
+        method = "isDamageSourceBlocked(Lnet/minecraft/world/damagesource/DamageSource;)Z",
+        at = @At(value = "MIXINEXTRAS:EXPRESSION", shift = At.Shift.AFTER),
+        ordinal = 2
+    )
+    private Vec3 modify_blockedByShield_Vec3d_2(Vec3 vec3d) {
+        Direction gravityDirection = GravityChangerAPI.getGravityDirection((Entity)(Object)this);
+        if(gravityDirection == Direction.DOWN) {
+            return vec3d;
+        }
+
+        return RotationUtil.vecWorldToPlayer(vec3d, gravityDirection);
     }
+
 }

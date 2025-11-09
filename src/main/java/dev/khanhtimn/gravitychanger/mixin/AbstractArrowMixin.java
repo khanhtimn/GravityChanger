@@ -1,10 +1,15 @@
 package dev.khanhtimn.gravitychanger.mixin;
 
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import dev.khanhtimn.gravitychanger.api.GravityChangerAPI;
 import dev.khanhtimn.gravitychanger.util.RotationUtil;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -13,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(AbstractArrow.class)
 public abstract class AbstractArrowMixin extends Entity {
@@ -36,28 +42,12 @@ public abstract class AbstractArrowMixin extends Entity {
         modify = RotationUtil.vecPlayerToWorld(modify, GravityChangerAPI.getGravityDirection(this));
         return modify;
     }
-    
-    
-    /*@WrapOperation(
-        method = "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/level/Level;)V",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/world/entity/projectile/AbstractArrow;<init>(Lnet/minecraft/world/entity/EntityType;DDDLnet/minecraft/world/level/Level;)V"
-        )
+
+    @ModifyReturnValue(
+            method = "getDefaultGravity",
+            at = @At("RETURN")
     )
-    private static AbstractArrow modifyargs_init_init_0(AbstractArrow instance, EntityType<? extends AbstractArrow> type, double x, double y, double z, Level world, Operation<AbstractArrow> original, @Local LivingEntity owner
-                                                        ) {
-        Direction gravityDirection = GravityChangerAPI.getGravityDirection(owner);
-        if(gravityDirection != Direction.DOWN) {
-            Vec3 pos = owner.getEyePosition().subtract(RotationUtil.vecPlayerToWorld(0.0D, 0.10000000149011612D, 0.0D, gravityDirection));
-            return original.call(instance, type, pos.x, pos.y, pos.z, world);
-        }
-
-        return original.call(instance, type, x, y, z, world);
-    }*/
-
-    @ModifyConstant(method = "tick()V", constant = @Constant(doubleValue = 0.05000000074505806))
-    private double multiplyGravity(double constant) {
-        return constant * GravityChangerAPI.getGravityStrength(this);
+    private double multiplyGravity(double original) {
+        return original * GravityChangerAPI.getGravityStrength(((Entity) (Object) this));
     }
 }

@@ -3,7 +3,7 @@ package dev.khanhtimn.gravitychanger.block.blocks;
 import dev.khanhtimn.gravitychanger.EntityTags;
 import dev.khanhtimn.gravitychanger.api.GravityChangerAPI;
 import dev.khanhtimn.gravitychanger.data.attachments.GravityData;
-import dev.khanhtimn.gravitychanger.GravityConfig;
+import dev.khanhtimn.gravitychanger.GravityChangerConfig;
 import dev.khanhtimn.gravitychanger.block.GravityBlocks;
 import dev.khanhtimn.gravitychanger.item.items.GravityPlatingItem;
 import dev.khanhtimn.gravitychanger.util.GCUtil;
@@ -120,7 +120,7 @@ public class GravityPlatingBlockEntity extends BlockEntity {
                 }
             }
 
-            if (applies && GravityConfig.autoJumpOnGravityPlateInnerCorner.get()) {
+            if (applies && GravityChangerConfig.autoJumpOnGravityPlateInnerCorner.get()) {
                 tryToDoCornerAutoJump(blockState, blockPos, entity, data);
             }
         }

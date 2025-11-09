@@ -1,6 +1,6 @@
 package dev.khanhtimn.gravitychanger.api;
 
-import dev.khanhtimn.gravitychanger.GravityConfig;
+import dev.khanhtimn.gravitychanger.GravityChangerConfig;
 import net.minecraft.nbt.CompoundTag;
 
 public record RotationParameters(
@@ -14,9 +14,9 @@ public record RotationParameters(
 
     public static void updateDefault() {
         defaultParam = new RotationParameters(
-                !GravityConfig.worldVelocity.get(),
+                !GravityChangerConfig.worldVelocity.get(),
                 true,
-                GravityConfig.rotationTime.get()
+                GravityChangerConfig.rotationTime.get()
         );
     }
 

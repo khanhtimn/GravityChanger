@@ -1,5 +1,6 @@
 package dev.khanhtimn.gravitychanger;
 
+import com.mojang.logging.LogUtils;
 import dev.khanhtimn.gravitychanger.command.argument.DirectionArgumentType;
 import dev.khanhtimn.gravitychanger.command.argument.LocalDirectionArgumentType;
 import dev.khanhtimn.gravitychanger.data.GravityAttachedData;
@@ -19,10 +20,12 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import org.slf4j.Logger;
 
 @Mod(GravityChanger.MODID)
 public class GravityChanger {
     public static final String MODID = "gravitychanger";
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     public GravityChanger(IEventBus modEventBus, ModContainer modContainer) {
         modEventBus.addListener(this::commonSetup);
@@ -36,7 +39,7 @@ public class GravityChanger {
         GravityAttachedData.DATA_ATTACHMENT_TYPES.register(modEventBus);
         GravityComponents.DATA_COMPONENT_TYPES.register(modEventBus);
 
-        modContainer.registerConfig(ModConfig.Type.COMMON, GravityConfig.SPEC);
+        modContainer.registerConfig(ModConfig.Type.COMMON, GravityChangerConfig.SPEC);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

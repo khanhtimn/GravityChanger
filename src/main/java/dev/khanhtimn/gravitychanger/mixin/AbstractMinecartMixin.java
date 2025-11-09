@@ -1,5 +1,8 @@
 package dev.khanhtimn.gravitychanger.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import dev.khanhtimn.gravitychanger.api.GravityChangerAPI;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -15,15 +18,11 @@ public abstract class AbstractMinecartMixin extends Entity {
         super(type, world);
     }
 
-    @ModifyArg(
-            method = "tick",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/phys/Vec3;add(DDD)Lnet/minecraft/world/phys/Vec3;"
-            ),
-            index = 1
+    @ModifyReturnValue(
+            method = "getDefaultGravity",
+            at = @At("RETURN")
     )
-    private double multiplyGravity(double x) {
-        return x * GravityChangerAPI.getGravityStrength(this);
+    private double multiplyGravity(double original) {
+        return original * GravityChangerAPI.getGravityStrength(((Entity) (Object) this));
     }
 }

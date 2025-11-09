@@ -6,7 +6,7 @@ import dev.khanhtimn.gravitychanger.EntityTags;
 import dev.khanhtimn.gravitychanger.RotationAnimation;
 import dev.khanhtimn.gravitychanger.api.GravityChangerAPI;
 import dev.khanhtimn.gravitychanger.api.RotationParameters;
-import dev.khanhtimn.gravitychanger.GravityConfig;
+import dev.khanhtimn.gravitychanger.GravityChangerConfig;
 import dev.khanhtimn.gravitychanger.mob_effect.GravityMobEffects;
 import dev.khanhtimn.gravitychanger.item.items.GravityAnchorItem;
 import dev.khanhtimn.gravitychanger.mixin.EntityAccessor;
@@ -222,7 +222,7 @@ public class GravityData {
         } else {
             currGravityDirection = baseGravityDirection;
             currGravityStrength = baseGravityStrength;
-            currGravityStrength *= GravityConfig.gravityStrengthMultiplier.get();
+            currGravityStrength *= GravityChangerConfig.gravityStrengthMultiplier.get();
             // the rotation parameters is not being reset here
             // the rotation parameter is kept when an effect vanishes
             currentEffectPriority = Double.MIN_VALUE;
@@ -432,7 +432,7 @@ public class GravityData {
 
     // Adjust position to avoid suffocation in blocks when changing gravity
     private void adjustEntityPosition(Direction oldGravity, Direction newGravity, AABB entityBoundingBox) {
-        if (!GravityConfig.adjustPositionAfterChangingGravity.get()) {
+        if (!GravityChangerConfig.adjustPositionAfterChangingGravity.get()) {
             return;
         }
 

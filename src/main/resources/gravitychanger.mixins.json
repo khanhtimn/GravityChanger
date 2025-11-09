@@ -3,6 +3,9 @@
   "package": "dev.khanhtimn.gravitychanger.mixin",
   "plugin": "dev.khanhtimn.gravitychanger.GravityMixinPlugin",
   "compatibilityLevel": "JAVA_21",
+  "mixinextras": {
+    "minVersion": "0.5.0"
+  },
   "mixins": [
     "AbstractArrowMixin",
     "AbstractHorseMixin",
@@ -10,6 +13,7 @@
     "AbstractSkeletonMixin",
     "AreaEffectCloudMixin",
     "BegGoalMixin",
+    "BoatMixin",
     "CrossbowItemMixin",
     "DirectionMixin",
     "DrownedMixin",
@@ -30,7 +34,6 @@
     "LlamaSpitMixin",
     "LookAtPlayerGoalMixin",
     "LookControlMixin",
-    "MixinServerLevel",
     "MobMixin",
     "PiglinMixin",
     "PillagerMixin",
@@ -53,6 +56,7 @@
     "WitchMixin",
     "WitherBossMixin",
     "compat.ACEntityMixin",
+    "debug.EntityDebugMixin",
     "fall_distance.ServerGamePacketListenerImplMixin",
     "fall_distance.ServerPlayerMixin_FallDistance",
     "forge.MixinForgeHooks",

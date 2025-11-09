@@ -4,8 +4,8 @@
   "render_type": "cutout",
   "parent": "block/thin_block",
   "textures": {
-    "0": "gravityapi:block/plating_dense",
-    "particle": "gravityapi:block/plating_dense"
+    "0": "gravitychanger:block/plating_dense",
+    "particle": "gravitychanger:block/plating_dense"
   },
   "elements": [
     {

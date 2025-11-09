@@ -39,10 +39,10 @@ public abstract class MobMixin {
 //        }
 //    }
 
-    @Shadow
-    protected PathNavigation createNavigation(Level p_21480_) {
-        throw new IllegalStateException();
-    }
+//    @Shadow
+//    protected PathNavigation createNavigation(Level p_21480_) {
+//        throw new IllegalStateException();
+//    }
 
     @WrapOperation(
             method = "doHurtTarget",

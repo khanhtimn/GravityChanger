@@ -80,7 +80,7 @@ public abstract class LookControlMixin {
     }
 
     @Redirect(
-            method = "Lnet/minecraft/world/entity/ai/control/LookControl;setLookAt(Lnet/minecraft/world/entity/Entity;FF)V",
+            method = "setLookAt(Lnet/minecraft/world/entity/Entity;FF)V",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/entity/Entity;getZ()D",

@@ -15,16 +15,17 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(ThrowableProjectile.class)
 public abstract class ThrowableProjectileMixin {
 
-    @Shadow
-    protected abstract float getGravity();
 
     /*@Override
     public Direction gravitychanger$getAppliedGravityDirection() {
         return GravityChangerAPI.getGravityDirection((ThrownEntity)(Object)this);
     }*/
 
+    @Shadow
+    protected abstract double getDefaultGravity();
+
     @ModifyVariable(
-            method = "Lnet/minecraft/world/entity/projectile/ThrowableProjectile;tick()V",
+            method = "tick()V",
             at = @At(
                     value = "STORE"
             )
@@ -32,9 +33,9 @@ public abstract class ThrowableProjectileMixin {
     )
     public Vec3 tick(Vec3 modify) {
         //if(this instanceof RotatableEntityAccessor) {
-        modify = new Vec3(modify.x, modify.y + this.getGravity(), modify.z);
+        modify = new Vec3(modify.x, modify.y + this.getDefaultGravity(), modify.z);
         modify = RotationUtil.vecWorldToPlayer(modify, GravityChangerAPI.getGravityDirection((ThrowableProjectile) (Object) this));
-        modify = new Vec3(modify.x, modify.y - this.getGravity(), modify.z);
+        modify = new Vec3(modify.x, modify.y - this.getDefaultGravity(), modify.z);
         modify = RotationUtil.vecPlayerToWorld(modify, GravityChangerAPI.getGravityDirection((ThrowableProjectile) (Object) this));
         // }
         return modify;
@@ -56,8 +57,8 @@ public abstract class ThrowableProjectileMixin {
         return original.call(instance, type, pos.x, pos.y, pos.z, world);
     }*/
 
-    @ModifyReturnValue(method = "getGravity", at = @At("RETURN"))
-    private float multiplyGravity(float original) {
-        return original * (float) GravityChangerAPI.getGravityStrength(((Entity) (Object) this));
+    @ModifyReturnValue(method = "getDefaultGravity", at = @At("RETURN"))
+    private double multiplyGravity(double original) {
+        return original * GravityChangerAPI.getGravityStrength(((Entity) (Object) this));
     }
 }

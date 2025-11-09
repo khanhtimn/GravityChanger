@@ -4,11 +4,11 @@ import dev.khanhtimn.gravitychanger.api.GravityChangerAPI;
 import dev.khanhtimn.gravitychanger.data.attachments.GravityData;
 import dev.khanhtimn.gravitychanger.network.GravityNetwork;
 import dev.khanhtimn.gravitychanger.network.ServerBoundPacket;
-import dev.khanhtimn.gravitychanger.util.GCUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
@@ -28,11 +28,14 @@ public record UpdateGravitySyncStatePacket(UUID entityUUID) implements ServerBou
 
     @Override
     public void handleOnServer(ServerPlayer player) {
-        Entity entity = GCUtil.getEntityByUUID(player.level(), entityUUID);
-        if (entity != null) {
-            GravityData data = GravityChangerAPI.getGravityData(entity);
-            data.needsSync = false;
-            data.noAnimation = false;
+        ServerLevel serverLevel = player.serverLevel();
+        for (Entity entity : serverLevel.getAllEntities()) {
+            if (entity.getUUID().equals(entityUUID)) {
+                GravityData data = GravityChangerAPI.getGravityData(entity);
+                data.needsSync = false;
+                data.noAnimation = false;
+                break;
+            }
         }
     }
 

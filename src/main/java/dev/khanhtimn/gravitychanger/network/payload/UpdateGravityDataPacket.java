@@ -3,7 +3,7 @@ package dev.khanhtimn.gravitychanger.network.payload;
 import dev.khanhtimn.gravitychanger.api.GravityChangerAPI;
 import dev.khanhtimn.gravitychanger.network.ClientBoundPacket;
 import dev.khanhtimn.gravitychanger.network.GravityNetwork;
-import dev.khanhtimn.gravitychanger.util.GCUtil;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Direction;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -45,18 +45,20 @@ public record UpdateGravityDataPacket(
 
     @Override
     public void handleOnClient(Player player) {
-        GCUtil.getClientLevel(level -> {
-            Entity entity = GCUtil.getEntityByUUID(level, entityUUID);
-            if (entity != null) {
-                GravityChangerAPI.getGravityData(entity).sync(
-                        noAnimation,
-                        baseGravityDirection,
-                        currentGravityDirection,
-                        baseGravityStrength,
-                        currentGravityStrength
-                );
+        if (player.level() instanceof ClientLevel clientLevel) {
+            for (Entity entity : clientLevel.entitiesForRendering()) {
+                if (entity.getUUID().equals(entityUUID)) {
+                    GravityChangerAPI.getGravityData(entity).sync(
+                            noAnimation,
+                            baseGravityDirection,
+                            currentGravityDirection,
+                            baseGravityStrength,
+                            currentGravityStrength
+                    );
+                    break;
+                }
             }
-        });
+        }
     }
 
     @Override

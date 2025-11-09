@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ThrownExperienceBottle.class)
 public class ThrownExperienceBottleMixin {
-    @ModifyReturnValue(method = "getGravity", at = @At("RETURN"))
-    private float multiplyGravity(float original) {
-        return original * (float) GravityChangerAPI.getGravityStrength(((Entity) (Object) this));
+    @ModifyReturnValue(method = "getDefaultGravity", at = @At("RETURN"))
+    private double multiplyGravity(double original) {
+        return original * GravityChangerAPI.getGravityStrength(((Entity) (Object) this));
     }
 }

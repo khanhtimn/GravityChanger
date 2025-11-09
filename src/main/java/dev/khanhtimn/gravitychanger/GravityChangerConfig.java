@@ -2,7 +2,7 @@ package dev.khanhtimn.gravitychanger;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-public class GravityConfig {
+public class GravityChangerConfig {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     public static final ModConfigSpec.IntValue rotationTime = BUILDER
