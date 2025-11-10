@@ -9,17 +9,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 public class CommonEvents {
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         GravityCommand.register(event.getDispatcher());
-    }
-
-    public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
-        // Entity tracking no longer needed with data attachments
-        // Data attachments handle syncing automatically in NeoForge 1.21
     }
 
     public static void onPlayerClone(PlayerEvent.Clone event) {
@@ -30,7 +24,6 @@ public class CommonEvents {
             GravityChangerAPI.setBaseGravityDirection(player, GravityChangerAPI.getBaseGravityDirection(original));
         }
 
-        // Reinitialize gravity data for all entities with non-default gravity
         if (player.level() instanceof ServerLevel serverLevel) {
             for (Entity entity : serverLevel.getAllEntities()) {
                 if (!entity.level().isClientSide) {

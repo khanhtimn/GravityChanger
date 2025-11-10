@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(CommonHooks.class)
-public class MixinForgeHooks {
+public class CommonHooksMixin {
     @Redirect(
             method = "onLivingBreathe",
             at = @At(

@@ -1,5 +1,7 @@
 package dev.khanhtimn.gravitychanger.mixin.client;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.khanhtimn.gravitychanger.EntityTags;
@@ -132,7 +134,7 @@ public abstract class EntityRenderDispatcherMixin {
         return RotationUtil.boxWorldToPlayer(box, gravityDirection);
     }
 
-    @Redirect(
+    @WrapOperation(
             method = "renderHitbox",
             at = @At(
                     value = "INVOKE",
@@ -140,11 +142,11 @@ public abstract class EntityRenderDispatcherMixin {
                     ordinal = 0
             )
     )
-    private static Vec3 redirectViewVector(Entity instance, float partialTicks) {
+    private static Vec3 redirectViewVector(Entity instance, float partialTicks, Operation<Vec3> original) {
         Vec3 viewVector = instance.getViewVector(partialTicks);
         Direction gravityDirection = GravityChangerAPI.getGravityDirection(instance);
         if (gravityDirection == Direction.DOWN) {
-            return viewVector;
+            return original.call(instance, partialTicks);
         }
 
         return RotationUtil.vecWorldToPlayer(viewVector, gravityDirection);

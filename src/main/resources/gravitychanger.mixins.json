@@ -17,6 +17,7 @@
     "CrossbowItemMixin",
     "DirectionMixin",
     "DrownedMixin",
+    "Enderman_EndermanFreezeWhenLookedAt",
     "EndermanMixin",
     "EntityAccessor",
     "EntityCollisionContextMixin",
@@ -56,13 +57,17 @@
     "WitchMixin",
     "WitherBossMixin",
     "compat.ACEntityMixin",
+    "compat.IPGravityChangerInterfaceMixin",
+    "compat.IPModEntryMixin",
     "debug.EntityDebugMixin",
     "fall_distance.ServerGamePacketListenerImplMixin",
     "fall_distance.ServerPlayerMixin_FallDistance",
-    "forge.MixinForgeHooks",
+    "forge.CommonHooksMixin",
     "item.BehaviorUtilsMixin"
   ],
   "client": [
+    "client.BiomeAmbientSoundHandlerMixin",
+    "client.compat.IPGravityChangerInterfaceMixin",
     "client.CameraMixin",
     "client.ClientPacketListenerMixin",
     "client.EntityRenderDispatcherMixin",
@@ -72,7 +77,6 @@
     "client.ItemPickupParticleMixin",
     "client.LocalPlayerEntityMixin",
     "client.PlayerRendererMixin",
-    "client.RemotePlayerEntityMixin",
     "client.ScreenEffectRendererMixin"
   ],
   "server": [

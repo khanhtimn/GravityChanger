@@ -43,6 +43,5 @@ public class GravityChanger {
     private void commonSetup(FMLCommonSetupEvent event) {
         NeoForge.EVENT_BUS.addListener(CommonEvents::onRegisterCommands);
         NeoForge.EVENT_BUS.addListener(CommonEvents::onPlayerClone);
-        NeoForge.EVENT_BUS.addListener(CommonEvents::onEntityJoinLevel);
     }
 }

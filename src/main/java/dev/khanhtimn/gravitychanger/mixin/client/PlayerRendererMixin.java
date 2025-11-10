@@ -1,5 +1,7 @@
 package dev.khanhtimn.gravitychanger.mixin.client;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.khanhtimn.gravitychanger.api.GravityChangerAPI;
 import dev.khanhtimn.gravitychanger.util.RotationUtil;
@@ -37,19 +39,19 @@ public abstract class PlayerRendererMixin {
     }
 
 
-    @Redirect(
+    @WrapOperation(
             method = "setupRotations(Lnet/minecraft/client/player/AbstractClientPlayer;Lcom/mojang/blaze3d/vertex/PoseStack;FFFF)V",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/player/AbstractClientPlayer;getViewVector(F)Lnet/minecraft/world/phys/Vec3;"
             )
     )
-    private Vec3 modify_setupTransforms_Vec3d_0(AbstractClientPlayer instance, float partialTick) {
+    private Vec3 modify_setupTransforms_Vec3d_0(AbstractClientPlayer instance, float partialTick, Operation<Vec3> original) {
         Vec3 viewVector = instance.getViewVector(partialTick);
 
         Direction gravityDirection = GravityChangerAPI.getGravityDirection(instance);
         if (gravityDirection == Direction.DOWN) {
-            return viewVector;
+            return original.call(instance, partialTick);
         }
 
         return RotationUtil.vecWorldToPlayer(viewVector, gravityDirection);

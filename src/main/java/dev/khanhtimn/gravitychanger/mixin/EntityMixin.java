@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.expression.Definition;
 import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import dev.khanhtimn.gravitychanger.GravityChangerConfig;
 import dev.khanhtimn.gravitychanger.api.GravityChangerAPI;
 import dev.khanhtimn.gravitychanger.util.RotationUtil;
@@ -301,7 +302,11 @@ public abstract class EntityMixin {
     @Expression("? = ?.getEntityCollisions(?, ?)")
     @ModifyVariable(
             method = "collide",
-            at = @At(value = "MIXINEXTRAS:EXPRESSION", shift = At.Shift.AFTER),
+            at = @At(
+                    value = "MIXINEXTRAS:EXPRESSION",
+                    shift = At.Shift.AFTER,
+                    ordinal = 0
+            ),
             ordinal = 0,
             argsOnly = true)
     private Vec3 modify_adjustMovementForCollisions_Vec3d_0(Vec3 vec3d) {
@@ -330,18 +335,19 @@ public abstract class EntityMixin {
 
     // the argument was transformed to local coord,
     // but bounding box stretch needs world coord
-    @WrapOperation(
+    @ModifyArgs(
             method = "collide",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/phys/AABB;expandTowards(DDD)Lnet/minecraft/world/phys/AABB;"
             )
     )
-    private AABB redirect_adjustMovementForCollisions_stretch_1(AABB instance, double x, double y, double z, Operation<AABB> original) {
-        Vec3 rotate = new Vec3(x, y, z);
+    private void redirect_adjustMovementForCollisions_stretch_0(Args args) {
+        Vec3 rotate = new Vec3(args.get(0), args.get(1), args.get(2));
         rotate = RotationUtil.vecPlayerToWorld(rotate, GravityChangerAPI.getGravityDirection((Entity) (Object) this));
-
-        return original.call(instance, rotate.x, rotate.y, rotate.z);
+        args.set(0, rotate.x);
+        args.set(1, rotate.y);
+        args.set(2, rotate.z);
     }
 
     // the argument was transformed to local coord,
@@ -391,7 +397,7 @@ public abstract class EntityMixin {
         FloatSet floatSet = new FloatArraySet(4);
         Direction gravityDirection = GravityChangerAPI.getGravityDirection((Entity)(Object)this);
 
-        double relativeBottom = getRelativeBottom(boxSnappedToGround, gravityDirection);
+        double relativeBottom = gravityChanger$getRelativeBottom(boxSnappedToGround, gravityDirection);
 
         if(gravityDirection.getAxisDirection() == Direction.AxisDirection.NEGATIVE) {
             for (VoxelShape voxelShape : allCollisions) {
@@ -431,7 +437,7 @@ public abstract class EntityMixin {
     }
 
     @Unique
-    private static double getRelativeBottom(AABB boxSnappedToGround, Direction gravityDirection) {
+    private static double gravityChanger$getRelativeBottom(AABB boxSnappedToGround, Direction gravityDirection) {
         double relativeBottom = boxSnappedToGround.minY;
         if(gravityDirection == Direction.DOWN)
             relativeBottom = boxSnappedToGround.minY;
@@ -472,15 +478,41 @@ public abstract class EntityMixin {
     //1.20.6 -> 1.21.1 - Unchanged
     //TODO: This changes WAY too much and is at risk of incompatibility with other mods and updates
     // however the last method like this I fixed took over an hour, so I'll leave it alone for now
-    @Redirect(
-            method = "collideBoundingBox(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Lnet/minecraft/world/level/Level;Ljava/util/List;)Lnet/minecraft/world/phys/Vec3;",
+    @WrapOperation(
+            method = "collide",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/entity/Entity;collideWithShapes(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/List;)Lnet/minecraft/world/phys/Vec3;",
                     ordinal = 0
             )
     )
-    private static Vec3 redirect_adjustMovementForCollisions_adjustMovementForCollisions_0(Vec3 movement, AABB entityBoundingBox, List<VoxelShape> collisions, Entity entity) {
+    private Vec3 redirect_collide_collideWithShapes_0(Vec3 movement, AABB entityBoundingBox, List<VoxelShape> collisions, Operation<Vec3> original) {
+        Entity entity = (Entity) (Object) this;
+        if (entity == null || GravityChangerAPI.getGravityDirection(entity) == Direction.DOWN) {
+            return original.call(movement, entityBoundingBox, collisions);
+        }
+        return gravityChanger$redirection(movement, entityBoundingBox, collisions, entity);
+    }
+
+
+    @WrapOperation(
+            method = "collideBoundingBox",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/entity/Entity;collideWithShapes(Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/List;)Lnet/minecraft/world/phys/Vec3;",
+                    ordinal = 0
+            )
+    )
+    private static Vec3 redirect_collideBoundingBox_collideWithShapes_0(Vec3 movement, AABB entityBoundingBox, List<VoxelShape> collisions, Operation<Vec3> original, @Local(argsOnly = true) Entity entity) {
+        if (entity == null || GravityChangerAPI.getGravityDirection(entity) == Direction.DOWN) {
+            return original.call(movement, entityBoundingBox, collisions);
+        }
+        return gravityChanger$redirection(movement, entityBoundingBox, collisions, entity);
+    }
+
+
+    @Unique
+    private static Vec3 gravityChanger$redirection(Vec3 movement, AABB entityBoundingBox, List<VoxelShape> collisions, Entity entity) {
         Direction gravityDirection;
         if (entity == null || (gravityDirection = GravityChangerAPI.getGravityDirection(entity)) == Direction.DOWN) {
             return collideWithShapes(movement, entityBoundingBox, collisions);
@@ -518,11 +550,12 @@ public abstract class EntityMixin {
         if (!isZLargerThanX && playerMovementZ != 0.0D) {
             playerMovementZ = Shapes.collide(directionZ.getAxis(), entityBoundingBox, collisions, playerMovementZ * directionZ.getAxisDirection().getStep()) * directionZ.getAxisDirection().getStep();
         }
-
-        return RotationUtil.vecPlayerToWorld(playerMovementX, playerMovementY, playerMovementZ, gravityDirection);
+        return new Vec3(playerMovementX, playerMovementY, playerMovementZ);
+        //return RotationUtil.vecPlayerToWorld(playerMovementX, playerMovementY, playerMovementZ, gravityDirection);
     }
 
-    @WrapOperation(
+
+    @ModifyArgs(
             method = "isInWall",
             at = @At(
                     value = "INVOKE",
@@ -530,10 +563,12 @@ public abstract class EntityMixin {
                     ordinal = 0
             )
     )
-    private AABB modify_isInsideWall_of_0(Vec3 vec3, double x, double y, double z, Operation<AABB> original) {
-        Vec3 rotate = new Vec3(x, y, z);
+    private void modify_isInsideWall_of_0(Args args) {
+        Vec3 rotate = new Vec3(args.get(1), args.get(2), args.get(3));
         rotate = RotationUtil.vecPlayerToWorld(rotate, GravityChangerAPI.getGravityDirection((Entity) (Object) this));
-        return original.call(vec3, rotate.x, rotate.y, rotate.z);
+        args.set(1, rotate.x);
+        args.set(2, rotate.y);
+        args.set(3, rotate.z);
     }
 
     @ModifyArg(
@@ -727,7 +762,7 @@ public abstract class EntityMixin {
         }
     }
 
-    @WrapOperation(
+    @ModifyArgs(
             method = "isFree(DDD)Z",
             at = @At(
                     value = "INVOKE",
@@ -735,10 +770,12 @@ public abstract class EntityMixin {
                     ordinal = 0
             )
     )
-    private AABB redirect_doesNotCollide_offset_0(AABB instance, double x, double y, double z, Operation<AABB> original) {
-        Vec3 rotate = new Vec3(x, y, z);
+    private void redirect_doesNotCollide_offset_0(Args args) {
+        Vec3 rotate = new Vec3(args.get(0), args.get(1), args.get(2));
         rotate = RotationUtil.vecPlayerToWorld(rotate, GravityChangerAPI.getGravityDirection((Entity) (Object) this));
-        return original.call(instance, rotate.x, rotate.y, rotate.z);
+        args.set(0, rotate.x);
+        args.set(1, rotate.y);
+        args.set(2, rotate.z);
     }
 
     //Original method call does the same thing on current version, and since the getEyePos

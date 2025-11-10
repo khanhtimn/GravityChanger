@@ -53,6 +53,18 @@
   "item.minecraft.lingering_potion.effect.gravity_south_0": "Lingering Potion of South Gravity",
   "item.minecraft.lingering_potion.effect.gravity_west_0": "Lingering Potion of West Gravity",
   "item.minecraft.lingering_potion.effect.gravity_east_0": "Lingering Potion of East Gravity",
+  "item.minecraft.tipped_arrow.effect.gravity_decr_0": "Arrow of Gravity Decrease",
+  "item.minecraft.tipped_arrow.effect.gravity_decr_1": "Arrow of Gravity Decrease",
+  "item.minecraft.tipped_arrow.effect.gravity_incr_0": "Arrow of Gravity Increase",
+  "item.minecraft.tipped_arrow.effect.gravity_incr_1": "Arrow of Gravity Increase",
+  "item.minecraft.tipped_arrow.effect.gravity_reverse_0": "Arrow of Gravity Strength Reverse",
+  "item.minecraft.tipped_arrow.effect.gravity_reverse_1": "Arrow of Gravity Strength Reverse",
+  "item.minecraft.tipped_arrow.effect.gravity_down_0": "Arrow of Down Gravity",
+  "item.minecraft.tipped_arrow.effect.gravity_up_0": "Arrow of Up Gravity",
+  "item.minecraft.tipped_arrow.effect.gravity_north_0": "Arrow of North Gravity",
+  "item.minecraft.tipped_arrow.effect.gravity_south_0": "Arrow of South Gravity",
+  "item.minecraft.tipped_arrow.effect.gravity_west_0": "Arrow of West Gravity",
+  "item.minecraft.tipped_arrow.effect.gravity_east_0": "Arrow of East Gravity",
   "gravity_changer.gravity_changer.tooltip.0": "Changes base gravity",
   "gravity_changer.gravity_changer.tooltip.1": "Effects can override base gravity",
   "gravity_changer.gravity_anchor.tooltip.0": "Changes gravity when held",
@@ -89,5 +101,7 @@
   "gravity_changer.plate.wrong_interaction": "Interact with this using amethyst or bare hand",
   "gravity_changer.plate.status": "Side: %s  Range: %s  Force: %s ",
   "gravity_changer.plate.force.attract": "Attract",
-  "gravity_changer.plate.force.repulse": "Repulse"
+  "gravity_changer.plate.force.repulse": "Repulse",
+  "itemGroup.gravitychanger.general": "GravityChanger",
+  "gravitychanger.creative_tab_icon.tooltip.0": "You're not supposed to have this"
 }
