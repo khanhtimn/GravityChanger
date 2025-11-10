@@ -184,7 +184,7 @@ public abstract class EntityMixin {
         Direction gravityDirection = GravityChangerAPI.getGravityDirection((Entity) (Object) this);
         if (gravityDirection == Direction.DOWN) return;
 
-        cir.setReturnValue(BlockPos.containing(this.position.add(Vec3.atLowerCornerOf(gravityDirection.getNormal()).multiply(0.5D, 0.5D, 0.5D))));
+        cir.setReturnValue(BlockPos.containing(this.position.add(Vec3.atLowerCornerOf(gravityDirection.getNormal()).scale(0.5D))));
     }
 
     @Inject(
@@ -284,7 +284,7 @@ public abstract class EntityMixin {
     }
 
     @Inject(
-            method = "getOnPosLegacy",
+            method = "getOnPos()Lnet/minecraft/core/BlockPos;",
             at = @At("HEAD"),
             cancellable = true
     )

@@ -15,8 +15,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DirectionArgumentType implements ArgumentType<Direction> {
+
+    public static DirectionArgumentType instance() {
+        return new DirectionArgumentType();
+    }
 
     public static final DynamicCommandExceptionType exceptionType =
             new DynamicCommandExceptionType(object ->
@@ -43,17 +48,16 @@ public class DirectionArgumentType implements ArgumentType<Direction> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return SharedSuggestionProvider.suggest(
+        return context.getSource() instanceof SharedSuggestionProvider
+                ? SharedSuggestionProvider.suggest(
                 Arrays.stream(Direction.values())
                         .map(d -> d.name().toLowerCase())
                         .collect(Collectors.toList()),
-                builder
-        );
+                builder) : Suggestions.empty();
     }
 
     @Override
     public Collection<String> getExamples() {
-        return Arrays.stream(Direction.values())
-                .map(Enum::toString).collect(Collectors.toList());
+        return Stream.of(Direction.values()).map(d -> d.name().toLowerCase()).collect(Collectors.toList());
     }
 }

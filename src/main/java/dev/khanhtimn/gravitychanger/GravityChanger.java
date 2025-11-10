@@ -1,8 +1,7 @@
 package dev.khanhtimn.gravitychanger;
 
 import com.mojang.logging.LogUtils;
-import dev.khanhtimn.gravitychanger.command.argument.DirectionArgumentType;
-import dev.khanhtimn.gravitychanger.command.argument.LocalDirectionArgumentType;
+import dev.khanhtimn.gravitychanger.command.GravityCommand;
 import dev.khanhtimn.gravitychanger.data.GravityAttachedData;
 import dev.khanhtimn.gravitychanger.data.GravityComponents;
 import dev.khanhtimn.gravitychanger.event.CommonEvents;
@@ -12,8 +11,6 @@ import dev.khanhtimn.gravitychanger.item.GravityItems;
 import dev.khanhtimn.gravitychanger.mob_effect.GravityMobEffects;
 import dev.khanhtimn.gravitychanger.mob_effect.GravityPotions;
 import dev.khanhtimn.gravitychanger.network.GravityNetwork;
-import net.minecraft.commands.synchronization.ArgumentTypeInfos;
-import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -38,14 +35,12 @@ public class GravityChanger {
         GravityCreativeTabs.CREATIVE_MODE_TAB.register(modEventBus);
         GravityAttachedData.DATA_ATTACHMENT_TYPES.register(modEventBus);
         GravityComponents.DATA_COMPONENT_TYPES.register(modEventBus);
+        GravityCommand.ARGUMENT_TYPES.register(modEventBus);
 
         modContainer.registerConfig(ModConfig.Type.COMMON, GravityChangerConfig.SPEC);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
-        ArgumentTypeInfos.registerByClass(DirectionArgumentType.class, SingletonArgumentInfo.contextFree(DirectionArgumentType::new));
-        ArgumentTypeInfos.registerByClass(LocalDirectionArgumentType.class, SingletonArgumentInfo.contextFree(LocalDirectionArgumentType::new));
-
         NeoForge.EVENT_BUS.addListener(CommonEvents::onRegisterCommands);
         NeoForge.EVENT_BUS.addListener(CommonEvents::onPlayerClone);
         NeoForge.EVENT_BUS.addListener(CommonEvents::onEntityJoinLevel);

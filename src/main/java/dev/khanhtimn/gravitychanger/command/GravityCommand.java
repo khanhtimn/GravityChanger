@@ -3,6 +3,7 @@ package dev.khanhtimn.gravitychanger.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import dev.khanhtimn.gravitychanger.GravityChanger;
 import dev.khanhtimn.gravitychanger.api.GravityChangerAPI;
 import dev.khanhtimn.gravitychanger.command.argument.DirectionArgumentType;
 import dev.khanhtimn.gravitychanger.command.argument.LocalDirection;
@@ -13,10 +14,16 @@ import dev.khanhtimn.gravitychanger.util.RotationUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.synchronization.ArgumentTypeInfo;
+import net.minecraft.commands.synchronization.ArgumentTypeInfos;
+import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.apache.commons.lang3.Validate;
 
 import java.util.Collection;
@@ -24,6 +31,23 @@ import java.util.List;
 import java.util.Objects;
 
 public class GravityCommand {
+
+    public static final DeferredRegister<ArgumentTypeInfo<?, ?>> ARGUMENT_TYPES = DeferredRegister.create(BuiltInRegistries.COMMAND_ARGUMENT_TYPE, GravityChanger.MODID);
+
+    private static final DeferredHolder<ArgumentTypeInfo<?, ?>, SingletonArgumentInfo<DirectionArgumentType>> DIRECTION_ARGUMENT_TYPE = ARGUMENT_TYPES.register(
+            "direction", () -> ArgumentTypeInfos.registerByClass(
+                    DirectionArgumentType.class,
+                    SingletonArgumentInfo.contextFree(DirectionArgumentType::instance)
+            )
+    );
+
+    private static final DeferredHolder<ArgumentTypeInfo<?, ?>, SingletonArgumentInfo<LocalDirectionArgumentType>> LOCAL_DIRECTION_ARGUMENT_TYPE = ARGUMENT_TYPES.register(
+            "local_direction", () -> ArgumentTypeInfos.registerByClass(
+                    LocalDirectionArgumentType.class,
+                    SingletonArgumentInfo.contextFree(LocalDirectionArgumentType::instance)
+            )
+    );
+
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralArgumentBuilder<CommandSourceStack> builder = Commands
                 .literal("gravity")
