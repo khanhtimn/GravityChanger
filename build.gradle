@@ -149,11 +149,12 @@ dependencies {
 
     compileOnly(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-common:${mixinsquared_version}"))
     implementation(jarJar(group: "com.github.bawnorton.mixinsquared", name: "mixinsquared-neoforge", version: "[${mixinsquared_version},)"))
-
     implementation(jarJar("com.github.Fallen-Breath.conditional-mixin:conditional-mixin-neoforge:${conditional_mixin_version}"))
 
-    implementation("maven.modrinth:cloth-config:15.0.140+neoforge")
-    implementation("maven.modrinth:immersive-portals-neoforge:6.0.7")
+    compileOnly("maven.modrinth:cloth-config:${cloth_config_version}")
+    compileOnly("maven.modrinth:immersive-portals-neoforge:${immersive_portals_version}")
+    localRuntime("maven.modrinth:cloth-config:${cloth_config_version}")
+    localRuntime("maven.modrinth:immersive-portals-neoforge:${immersive_portals_version}")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
