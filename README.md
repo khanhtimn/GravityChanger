@@ -1,5 +1,11 @@
 # GravityChanger
 
+DISCLAIMER: I just made this fork because I wanted to use it in my modpack. All credit goes to the original authors.
+I might make some changes or fix bugs in the future, but I don't plan on actively maintaining it.
+
+#
+From Magicalbananapi:
+
 NOTICE: I am extremely unlikely to maintain this fork, so if anyone else wants
 feel free to do so, if I ever come back I'll probably be working off the most 
 up-to-date version of the mod anyway.
